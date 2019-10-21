@@ -10,23 +10,31 @@ object fork extends ScalaModule with NativeImageModule {
 }
 
 trait NativeImageModule extends ScalaModule {
-  private def graalVmHome = T.input {
-    T.ctx().env.get("GRAALVM_HOME") match {
-      case Some(homePath) => Result.Success(homePath)
-      case None => Result.Failure("GRAALVM_HOME env variable is undefined")
+  private def javaHome = T.input {
+    T.ctx().env.get("JAVA_HOME") match {
+      case Some(homePath) => Result.Success(os.Path(homePath))
+      case None => Result.Failure("JAVA_HOME env variable is undefined")
     }
+  }
+
+  private def nativeImagePath = T.input {
+    val path = javaHome()/"bin"/"native-image"
+    if (os exists path) Result.Success(path)
+    else Result.Failure(
+      "native-image is not found in java home directory.\n" +
+      "Make sure JAVA_HOME points to GraalVM JDK and " +
+      "native-image is set up (https://www.graalvm.org/docs/reference-manual/native-image/)"
+    )
   }
 
   def nativeImage = T {
     import ammonite.ops._
     implicit val workingDirectory = T.ctx().dest
-    val graalHome = graalVmHome()
-    val command = s"$graalHome/bin/native-image"
-    val commandResult =
-      %%(command,
-        "-jar", assembly().path,
-        "--no-fallback",
-      )
+    %%(
+      nativeImagePath(),
+      "-jar", assembly().path,
+      "--no-fallback",
+    )
     finalMainClass()
   }
 }
