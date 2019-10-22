@@ -9,7 +9,13 @@ object Main extends CommandApp(
     val urlOpt = Opts.argument[String]("url")
     
     Opts.subcommand("clone", "Clone remote repository")(urlOpt).map { url =>
-      os.proc("git", "clone", url).call(os.home/"workspace"/"github.com"/"lavrov")
+      Git.Url.parse(url) match {
+        case Some(Git.Url(server, path)) =>
+          val shortPath =  if (path endsWith ".git") path.dropRight(4) else path
+          os.proc("git", "clone", url, shortPath).call(os.home/"workspace"/server)
+        case None =>
+          Console.err.println(s"Bad url '$url'")
+      }
     }
   }
 )
