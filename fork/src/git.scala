@@ -9,10 +9,13 @@ object Git {
 
   object Url {
 
-    private val regex = """^(git@)?([\w.-]+):([\w\/.-]+)$""".r
+    private val sshVariant = """^(git@)?([\w.-]+):([\w\/.-]+)$""".r
+    private val httpVariant = """^https?:\/\/([\w.-]+)/([\w\/.-]+)$""".r
 
     def parse(s: String): Option[Url] = s match {
-      case regex(_, server, path) =>
+      case httpVariant(server, path) =>
+        Url(server, path).some
+      case sshVariant(_, server, path) =>
         Url(server, path).some
       case _ =>
         none
