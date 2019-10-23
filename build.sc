@@ -6,6 +6,7 @@ object fork extends ScalaModule with NativeImageModule {
   def ivyDeps = Agg(
     ivy"com.monovore::decline:1.0.0",
     ivy"com.lihaoyi::os-lib:0.3.0",
+    ivy"com.lihaoyi::fansi:0.2.7",
   )
 }
 

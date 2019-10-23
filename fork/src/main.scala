@@ -11,11 +11,23 @@ object Main extends CommandApp(
     Opts.subcommand("clone", "Clone remote repository")(urlOpt).map { url =>
       Git.Url.parse(url) match {
         case Some(Git.Url(server, path)) =>
-          val shortPath =  if (path endsWith ".git") path.dropRight(4) else path
-          os.proc("git", "clone", url, shortPath).call(os.home/"workspace"/server)
+          val shortPath =  os.RelPath(if (path endsWith ".git") path.dropRight(4) else path)
+          val absPath = os.home/"workspace"/server/shortPath
+          os.proc("git", "clone", url, absPath).call()
+          Console.out.println(
+            TerminalUtil.success(s"Cloned into $absPath")
+          )
         case None =>
-          Console.err.println(s"Bad url '$url'")
+          Console.err.println(
+            TerminalUtil.error(s"Bad url '$url'")
+          )
       }
     }
   }
 )
+
+object TerminalUtil {
+  def success(message: String = "") = inBracket(fansi.Color.Green("Success")) + " " + message
+  def error(message: String) = inBracket(fansi.Color.Red("Error")) + " " + message
+  private def inBracket(v: fansi.Str) = "[" + v + "]"
+}
