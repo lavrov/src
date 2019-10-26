@@ -8,6 +8,12 @@ object fork extends ScalaModule with NativeImageModule {
     ivy"com.lihaoyi::os-lib:0.3.0",
     ivy"com.lihaoyi::fansi:0.2.7",
   )
+  object test extends Tests {
+    def ivyDeps = Agg(
+      ivy"com.lihaoyi::utest:0.7.1"
+    )
+    def testFrameworks = List("utest.runner.Framework")
+  }
 }
 
 trait NativeImageModule extends ScalaModule {
