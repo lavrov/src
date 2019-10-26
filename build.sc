@@ -1,7 +1,7 @@
 import mill._, scalalib._
 import mill.eval.Result
 
-object fork extends ScalaModule with NativeImageModule {
+object cli extends ScalaModule with NativeImageModule {
   def scalaVersion = "2.12.10"
   def ivyDeps = Agg(
     ivy"com.monovore::decline:1.0.0",

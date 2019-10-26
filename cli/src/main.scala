@@ -4,8 +4,8 @@ import com.monovore.decline.Opts
 
 object Main
     extends CommandApp(
-      name = "fork",
-      header = "GitHub assistant",
+      name = "src",
+      header = "git assistant",
       main = {
         val urlOpt = Opts.argument[String]("url")
 
