@@ -3,8 +3,8 @@ src
 
 Utility to make my interactions with git repositories smoother.
 
-Install
--------
+Installation
+------------
 
 ```sh
 $ brew install lavrov/tap/src

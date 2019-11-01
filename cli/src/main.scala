@@ -18,23 +18,26 @@ object Main
                   else path
                 )
                 val absPath = os.home / "workspace" / server / shortPath
-                os.proc("git", "clone", url, absPath).call()
-                Console.out.println(
+                if (os exists absPath) {
+                    TerminalUtil.error(s"Destination path already exists $absPath")
+                }
+                else {
+                  os.proc("git", "clone", url, absPath).call()
                   TerminalUtil.success(s"Cloned into $absPath")
-                )
+                }
               case None =>
-                Console.err.println(
-                  TerminalUtil.error(s"Bad url '$url'")
-                )
+                TerminalUtil.error(s"Bad url '$url'")
             }
         }
       }
     )
 
 object TerminalUtil {
-  def success(message: String = "") =
+  def success(message: String = "") = Console.out.println(
     inBracket(fansi.Color.Green("Success")) + " " + message
-  def error(message: String) =
+  )
+  def error(message: String) = Console.err.println(
     inBracket(fansi.Color.Red("Error")) + " " + message
+  )
   private def inBracket(v: fansi.Str) = "[" + v + "]"
 }
