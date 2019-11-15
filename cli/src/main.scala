@@ -17,14 +17,19 @@ object Main
                   if (path endsWith ".git") path.dropRight(4)
                   else path
                 )
-                val absPath = os.home / "workspace" / server / shortPath
-                if (os exists absPath) {
-                    TerminalUtil.error(s"Destination path already exists $absPath")
-                }
-                else {
-                  os.proc("git", "clone", url, absPath).call()
-                  TerminalUtil.success(s"Cloned into $absPath")
-                }
+                Config.workspacePath match {
+                  // TODO: improve error handling
+                  case Left(e) => TerminalUtil.error(s"Can't get workspace path: $e")
+                  case Right(workspace) =>
+                    val absPath = workspace / server / shortPath
+                    if (os exists absPath) {
+                        TerminalUtil.error(s"Destination path already exists $absPath")
+                    }
+                    else {
+                      os.proc("git", "clone", url, absPath).call()
+                      TerminalUtil.success(s"Cloned into $absPath")
+                    }
+              }
               case None =>
                 TerminalUtil.error(s"Bad url '$url'")
             }
@@ -33,6 +38,9 @@ object Main
     )
 
 object TerminalUtil {
+  def warning(message: String) = Console.out.println(
+    s"${inBracket(fansi.Color.Yellow("Warning"))} $message"
+  )
   def success(message: String = "") = Console.out.println(
     inBracket(fansi.Color.Green("Success")) + " " + message
   )
