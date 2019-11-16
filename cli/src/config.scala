@@ -1,8 +1,8 @@
 import os.{Path, FilePath, RelPath}
 
 object Config {
-  lazy val defaultWorkspace = "workspace"
-  lazy val configFileName = ".srcrc"
+  val defaultWorkspace = "workspace"
+  val configFileName = ".srcrc"
 
   type ConfigResult = Either[ConfigError, Path]
 
