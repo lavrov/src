@@ -7,6 +7,7 @@ object cli extends ScalaModule with NativeImageModule {
     ivy"com.monovore::decline:1.0.0",
     ivy"com.lihaoyi::os-lib:0.3.0",
     ivy"com.lihaoyi::fansi:0.2.7",
+    ivy"com.lihaoyi::upickle:0.7.1",
   )
   object test extends Tests {
     def ivyDeps = Agg(

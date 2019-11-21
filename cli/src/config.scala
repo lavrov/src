@@ -1,39 +1,26 @@
 import os.{Path, FilePath, RelPath}
 
+case class Config(
+  workspace: String
+)
 object Config {
-  val defaultWorkspace = "workspace"
-  val configFileName = ".srcrc"
+  val default = Config(
+    workspace = "~/workspace"
+  )
+  private val configFilePath = os.home / ".config" / "src" / "config"
+  private implicit val configRW = upickle.default.macroRW[Config]
 
-  type ConfigResult = Either[ConfigError, Path]
-
-  def workspacePath: ConfigResult = workspacePath(os.home)
-
-  // TODO: get rid of side-effects
-  def workspacePath(baseDir: Path): ConfigResult = {
-    if (os exists baseDir) {
-      val configFile = baseDir/configFileName
-
-      if (os.exists(configFile)) {
-        // TODO: extract parser
-        os.read.lines(configFile).toList.headOption.map(FilePath(_)) match {
-          case Some(r: RelPath) => Right(Path(r.toString, os.home))
-          case Some(p: Path) => Right(p)
-          case None => Left(ConfigFileIsEmpty(configFile))
-        }
-      } else {
-        val workspacePath = os.home/defaultWorkspace
-
-        os.write(configFile, workspacePath.toString)
-        TerminalUtil.warning(s"No config file found at $configFile. Created one with default workspace path: $workspacePath")
-
-        Right(workspacePath)
-      }
-    } else {
-      Left(BasePathDoesntExist(baseDir))
+  def read(): Option[Config] = {
+    if (os exists configFilePath) {
+      val configString = os.read(configFilePath)
+      val config = upickle.default.read[Config](configString)
+      Some(config)
     }
+    else None
+  }
+
+  def write(config: Config): Unit = {
+    val configString = upickle.default.write(config, indent = 4)
+    os.write(configFilePath, configString, createFolders = true)
   }
 }
-
-sealed trait ConfigError
-final case class BasePathDoesntExist(path: FilePath) extends ConfigError
-final case class ConfigFileIsEmpty(configFile: FilePath) extends ConfigError
