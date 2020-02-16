@@ -2,12 +2,12 @@ import mill._, scalalib._
 import mill.eval.Result
 
 object cli extends ScalaModule with NativeImageModule {
-  def scalaVersion = "2.12.10"
+  def scalaVersion = "2.13.1"
   def ivyDeps = Agg(
     ivy"com.monovore::decline:1.0.0",
     ivy"com.lihaoyi::os-lib:0.3.0",
     ivy"com.lihaoyi::fansi:0.2.7",
-    ivy"com.lihaoyi::upickle:0.7.1",
+    ivy"com.lihaoyi::upickle:0.9.9",
   )
   object test extends Tests {
     def ivyDeps = Agg(
@@ -42,6 +42,7 @@ trait NativeImageModule extends ScalaModule {
       nativeImagePath(),
       "-jar", assembly().path,
       "--no-fallback",
+      "--initialize-at-build-time=scala.runtime.Statics$VM",
     )
     finalMainClass()
   }
