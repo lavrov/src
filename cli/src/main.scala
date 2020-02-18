@@ -22,8 +22,13 @@ object Main
                     TerminalUtil.error(s"Destination path already exists $absPath")
                 }
                 else {
-                  os.proc("git", "clone", url, absPath).call()
-                  TerminalUtil.success(s"Cloned into $absPath")
+                  try {
+                    os.proc("git", "clone", url, absPath).call(stderr = os.Inherit, stdout = os.Inherit)
+                    TerminalUtil.success(s"Cloned into $absPath")
+                  }
+                  catch {
+                    case _: Throwable => TerminalUtil.error("Clone failed")
+                  }
                 }
               case None =>
                 TerminalUtil.error(s"Bad url '$url'")
