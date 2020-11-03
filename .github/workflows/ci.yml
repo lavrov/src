@@ -18,4 +18,6 @@ jobs:
 
     - name: release
       if: startsWith(github.ref, 'refs/tags/v')
-      run: env VERSION=${GITHUB_REF:11} ./mill cli.publish --sonatypeCreds PUBLISH_CREDS --signed false --stagingRelease false
+      env:
+        PUBLISH_CREDS: ${{ secrets.PUBLISH_CREDS }}
+      run: env VERSION=${GITHUB_REF:11} ./mill cli.publish --sonatypeCreds $PUBLISH_CREDS --signed false --stagingRelease false
