@@ -1,8 +1,8 @@
 import mill._, scalalib._
 import mill.eval.Result
 
-object cli extends ScalaModule with NativeImageModule {
-  def scalaVersion = "2.13.1"
+object cli extends ScalaModule with PublishModule with NativeImageModule {
+  def scalaVersion = "2.13.3"
   def ivyDeps = Agg(
     ivy"com.monovore::decline:1.0.0",
     ivy"com.lihaoyi::os-lib:0.3.0",
@@ -15,6 +15,28 @@ object cli extends ScalaModule with NativeImageModule {
     )
     def testFrameworks = List("utest.runner.Framework")
   }
+
+  import mill.scalalib.publish._
+
+  def publishVersion = T.input {
+    T.ctx.env.get("VERSION") match {
+      case Some(version) => Result.Success(version)
+      case None => Result.Failure("VERSION env variable is undefined")
+    }
+  }
+
+  def sonatypeUri = "https://maven.pkg.github.com/lavrov/src"
+
+  def pomSettings = PomSettings(
+    description = "Src",
+    organization = "com.github.lavrov",
+    url = "https://github.com/lavrov/src",
+    licenses = Seq(License.MIT),
+    versionControl = VersionControl.github("lavrov", "cli"),
+    developers = Seq(
+      Developer("lavrov", "Vitaly Lavrov","https://github.com/lavrov")
+    )
+  )
 }
 
 trait NativeImageModule extends ScalaModule {

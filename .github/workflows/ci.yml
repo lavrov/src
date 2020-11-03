@@ -13,18 +13,5 @@ jobs:
       with:
         java-version: graalvm@
 
-    - name: Run tests
+    - name: test
       run: ./mill cli.test
-
-  dist:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - uses: olafurpg/setup-scala@v5
-      with:
-        java-version: graalvm@
-    - name: Install native-image
-      run: gu install native-image
-
-    - name: Build native image
-      run: ./mill cli.nativeImage
