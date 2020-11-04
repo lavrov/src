@@ -29,10 +29,10 @@ object cli extends ScalaModule with PublishModule with NativeImageModule {
 
   def pomSettings = PomSettings(
     description = "Src",
-    organization = "com.github.lavrov",
+    organization = "com.github.lavrov.src",
     url = "https://github.com/lavrov/src",
     licenses = Seq(License.MIT),
-    versionControl = VersionControl.github("lavrov", "cli"),
+    versionControl = VersionControl.github("lavrov", "src"),
     developers = Seq(
       Developer("lavrov", "Vitaly Lavrov","https://github.com/lavrov")
     )
