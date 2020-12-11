@@ -6,15 +6,4 @@ Utility to make my interactions with git repositories smoother.
 Installation
 ------------
 
-```sh
-$ brew install lavrov/tap/src
-```
-
-
-Development
------------
-
-Build binary
-```sh
-$ ./mill cli.nativeImage
-```
+Distributed via [coursier](https://get-coursier.io/). Please refer to http://github.com/lavrov/channel for instructions.
