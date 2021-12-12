@@ -2,16 +2,16 @@ import mill._, scalalib._
 import mill.eval.Result
 
 object cli extends ScalaModule with PublishModule with NativeImageModule {
-  def scalaVersion = "2.13.3"
+  def scalaVersion = "2.13.7"
   def ivyDeps = Agg(
-    ivy"com.monovore::decline:1.0.0",
-    ivy"com.lihaoyi::os-lib:0.3.0",
-    ivy"com.lihaoyi::fansi:0.2.7",
-    ivy"com.lihaoyi::upickle:0.9.9",
+    ivy"com.monovore::decline:2.2.0",
+    ivy"com.lihaoyi::os-lib:0.7.8",
+    ivy"com.lihaoyi::fansi:0.3.0",
+    ivy"com.lihaoyi::upickle:1.4.2",
   )
   object test extends Tests {
     def ivyDeps = Agg(
-      ivy"com.lihaoyi::utest:0.7.1"
+      ivy"com.lihaoyi::utest:0.7.10"
     )
     def testFrameworks = List("utest.runner.Framework")
   }
