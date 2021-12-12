@@ -1,6 +1,7 @@
 /out
 .metals
 .bloop
+.bsp
 
 .idea
 .idea_modules

@@ -13,6 +13,11 @@ object GitTests extends TestSuite {
         val expected = Some(Git.Url("github.com", "lavrov/src.git"))
         assert(actual == expected)
       }
+      test("parses user/repository") {
+        val actual = Git.Url.parse("lavrov/src")
+        val expected = Some(Git.Url("github.com", "lavrov/src.git"))
+        assert(actual == expected)
+      }
     }
   }
 }

@@ -1,5 +1,3 @@
-import cats.syntax.all._
-
 object Git {
 
   case class Url(
@@ -11,15 +9,17 @@ object Git {
 
     private val sshVariant = """^(git@)?([\w.-]+):([\w\/.-]+)$""".r
     private val httpVariant = """^https?:\/\/([\w.-]+)/([\w\/.-]+)$""".r
+    private val shortVariant = """^([\w.-]+)/([\w\/.-]+)$""".r
 
-    def parse(s: String): Option[Url] = s match {
-      case httpVariant(server, path) =>
-        Url(server, path).some
-      case sshVariant(_, server, path) =>
-        Url(server, path).some
-      case _ =>
-        none
-    }
+    def parse(s: String): Option[Url] =
+      PartialFunction.condOpt(s) {
+        case httpVariant(server, path) =>
+          Url(server, path)
+        case sshVariant(_, server, path) =>
+          Url(server, path)
+        case shortVariant(user, repository) =>
+          Url("github.com", s"$user/$repository.git")
+      }
   }
 
 }
