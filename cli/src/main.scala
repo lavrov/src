@@ -9,10 +9,10 @@ object Main
       main = {
         val urlOpt = Opts.argument[String]("url")
 
-        Opts.subcommand("clone", "Clone remote repository")(urlOpt).map { url =>
+        Opts.subcommand("clone", "Clone remote repository")(urlOpt).map { str =>
           WithConfig { config =>
-            Git.Url.parse(url) match {
-              case Some(Git.Url(server, path)) =>
+            Git.Url.parse(str) match {
+              case Some(Git.Url(url, server, path)) =>
                 val shortPath = os.RelPath(
                   if (path endsWith ".git") path.dropRight(4)
                   else path
@@ -31,7 +31,7 @@ object Main
                   }
                 }
               case None =>
-                TerminalUtil.error(s"Bad url '$url'")
+                TerminalUtil.error(s"Bad url '$str'")
             }
           }
         }

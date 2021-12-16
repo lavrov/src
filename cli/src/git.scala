@@ -1,6 +1,7 @@
 object Git {
 
   case class Url(
+    url: String,
     server: String,
     path: String,
   )
@@ -14,11 +15,11 @@ object Git {
     def parse(s: String): Option[Url] =
       PartialFunction.condOpt(s) {
         case httpVariant(server, path) =>
-          Url(server, path)
+          Url(s, server, path)
         case sshVariant(_, server, path) =>
-          Url(server, path)
+          Url(s, server, path)
         case shortVariant(user, repository) =>
-          Url("github.com", s"$user/$repository.git")
+          Url(s"git@github.com:$user/$repository.git", "github.com", s"$user/$repository.git")
       }
   }
 
