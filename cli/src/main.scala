@@ -1,5 +1,4 @@
 import com.monovore.decline.CommandApp
-import com.monovore.decline.Command
 import com.monovore.decline.Opts
 
 object Main
@@ -23,8 +22,14 @@ object Main
                 }
                 else {
                   try {
-                    os.proc("git", "clone", url, absPath).call(stderr = os.Inherit, stdout = os.Inherit)
-                    TerminalUtil.success(s"Cloned into $absPath")
+                    val exitCode =
+                      new ProcessBuilder("git", "clone", url, absPath.toString())
+                        .redirectError(ProcessBuilder.Redirect.INHERIT)
+                        .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                        .start()
+                        .waitFor()
+                    if (exitCode == 0)
+                      TerminalUtil.success(s"Cloned into $absPath")
                   }
                   catch {
                     case _: Throwable => TerminalUtil.error("Clone failed")

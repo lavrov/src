@@ -1,4 +1,4 @@
-import os.{Path, FilePath, RelPath}
+import upickle.default.ReadWriter
 
 case class Config(
   workspace: String
@@ -8,7 +8,7 @@ object Config {
     workspace = "~/workspace"
   )
   private val configFilePath = os.home / ".config" / "src" / "config"
-  private implicit val configRW = upickle.default.macroRW[Config]
+  private implicit val configRW: ReadWriter[Config] = upickle.default.macroRW[Config]
 
   def read(): Option[Config] = {
     if (os exists configFilePath) {
