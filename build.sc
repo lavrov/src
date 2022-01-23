@@ -1,5 +1,5 @@
 import mill._, scalalib._, scalanativelib._
-import mill.eval.Result
+import mill.api.Result
 
 object cli extends ScalaModule
   with ScalaNativeModule
@@ -28,11 +28,11 @@ object cli extends ScalaModule
     }
   }
 
-  def sonatypeUri = "https://maven.pkg.github.com/lavrov/src"
+  def sonatypeUri: String = "https://s01.oss.sonatype.org/service/local"
 
   def pomSettings = PomSettings(
     description = "Src",
-    organization = "com.github.lavrov.src",
+    organization = "io.github.lavrov.src",
     url = "https://github.com/lavrov/src",
     licenses = Seq(License.MIT),
     versionControl = VersionControl.github("lavrov", "src"),
