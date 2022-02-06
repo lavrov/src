@@ -1,25 +1,29 @@
 import mill._, scalalib._, scalanativelib._
 import mill.api.Result
 
-object cli extends ScalaModule
-  with ScalaNativeModule
-  with PublishModule
-{
+object cli extends Module {
+  object jvm extends CliModule {
+    object test extends Tests with CliTestModule
+  }
+  object native extends CliModule with ScalaNativeModule {
+    def scalaNativeVersion = "0.4.3"
+    object test extends Tests with CliTestModule
+  }
+}
+
+trait CliModule extends ScalaModule with PublishModule {
   def scalaVersion = "2.13.8"
-  def scalaNativeVersion = "0.4.3"
+  def millSourcePath = super.millSourcePath / _root_.os.up
   def ivyDeps = Agg(
     ivy"com.monovore::decline::2.2.0",
     ivy"com.lihaoyi::os-lib::0.7.8",
     ivy"com.lihaoyi::fansi::0.3.0",
     ivy"com.lihaoyi::upickle::1.4.2",
   )
-  object test extends Tests with TestModule.Utest {
-    def ivyDeps = super.ivyDeps() ++ Agg(
-      ivy"com.lihaoyi::utest::0.7.10",
-    )
-  }
 
   import mill.scalalib.publish._
+
+  def artifactName = "cli"
 
   def publishVersion = T.input {
     T.ctx.env.get("VERSION") match {
@@ -39,5 +43,11 @@ object cli extends ScalaModule
     developers = Seq(
       Developer("lavrov", "Vitaly Lavrov","https://github.com/lavrov")
     )
+  )
+}
+
+trait CliTestModule extends TestModule with TestModule.Utest {
+  def ivyDeps = super.ivyDeps() ++ Agg(
+    ivy"com.lihaoyi::utest::0.7.10",
   )
 }

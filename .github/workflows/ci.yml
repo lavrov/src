@@ -8,6 +8,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        platform: [jvm, native]
+
     steps:
 
     - uses: actions/checkout@v1
@@ -15,11 +19,11 @@ jobs:
     - name: Set up java
       uses: actions/setup-java@v1
       with:
-        java-version: 14
+        java-version: 17
         java-package: jre
 
     - name: test
-      run: ./mill cli.test
+      run: ./mill cli.${{matrix.platform}}.test
 
     - name: release
       if: startsWith(github.ref, 'refs/tags/v')
@@ -27,7 +31,7 @@ jobs:
         PUBLISH_CREDS: ${{ secrets.PUBLISH_CREDS }}
         SONATYPE_PGP_SECRET_KEY: ${{ secrets.SONATYPE_PGP_SECRET_KEY }}
       run: |
-        echo ${SONATYPE_PGP_SECRET_KEY} > secret_key
-        gpg --import --no-tty --batch --yes secret_key
-        rm secret_key
-        env VERSION=${GITHUB_REF} ./mill cli.publish --sonatypeCreds $PUBLISH_CREDS
+        echo ${SONATYPE_PGP_SECRET_KEY} | base64 --decode | gpg --import
+        export VERSION=${GITHUB_REF#*/v} 
+        echo Publishing $VERSION
+        ./mill cli.${{matrix.platform}}.publish --sonatypeCreds $PUBLISH_CREDS --gpgArgs "--batch,-a,-b"
