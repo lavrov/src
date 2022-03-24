@@ -16,9 +16,9 @@ trait CliModule extends ScalaModule with PublishModule {
   def millSourcePath = super.millSourcePath / _root_.os.up
   def ivyDeps = Agg(
     ivy"com.monovore::decline::2.2.0",
-    ivy"com.lihaoyi::os-lib::0.7.8",
-    ivy"com.lihaoyi::fansi::0.3.0",
-    ivy"com.lihaoyi::upickle::1.4.2",
+    ivy"com.lihaoyi::os-lib::0.8.1",
+    ivy"com.lihaoyi::fansi::0.3.1",
+    ivy"com.lihaoyi::upickle::1.5.0",
   )
 
   import mill.scalalib.publish._
