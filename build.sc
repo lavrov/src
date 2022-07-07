@@ -6,7 +6,7 @@ object cli extends Module {
     object test extends Tests with CliTestModule
   }
   object native extends CliModule with ScalaNativeModule {
-    def scalaNativeVersion = "0.4.3"
+    def scalaNativeVersion = "0.4.5"
     object test extends Tests with CliTestModule
   }
 }
