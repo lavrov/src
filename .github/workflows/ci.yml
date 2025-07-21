@@ -10,21 +10,6 @@ jobs:
       matrix:
         platform: [jvm, native]
     steps:
-      - uses: actions/checkout@v1
-      - name: Set up java
-        uses: actions/setup-java@v1
-        with:
-          java-version: 17
-          java-package: jre
+      - uses: actions/checkout@v2
       - name: test
         run: ./mill cli.${{matrix.platform}}.test
-      - name: release
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          PUBLISH_CREDS: ${{ secrets.PUBLISH_CREDS }}
-          SONATYPE_PGP_SECRET_KEY: ${{ secrets.SONATYPE_PGP_SECRET_KEY }}
-        run: |
-          echo ${SONATYPE_PGP_SECRET_KEY} | base64 --decode | gpg --import
-          export VERSION=${GITHUB_REF#*/v} 
-          echo Publishing $VERSION
-          ./mill cli.${{matrix.platform}}.publish --sonatypeCreds $PUBLISH_CREDS
