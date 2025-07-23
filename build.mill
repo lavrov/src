@@ -1,4 +1,4 @@
-//| mill-version: 1.0.0
+//| mill-version: 1.0.1
 
 import mill.*, scalalib.*, scalanativelib.*
 
