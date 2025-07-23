@@ -15,7 +15,7 @@ object cli extends Module {
 }
 
 trait CliModule extends ScalaModule {
-  def scalaVersion = "2.13.8"
+  def scalaVersion = "3.3.6"
   def mvnDeps = Seq(
     mvn"com.monovore::decline::2.5.0",
     mvn"com.lihaoyi::os-lib::0.11.4",
