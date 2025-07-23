@@ -18,49 +18,61 @@ object Main
                 )
                 val absPath = os.Path.expandUser(config.workspace) / server / shortPath
                 if (os exists absPath) {
-                    TerminalUtil.error(s"Destination path already exists $absPath")
+                    SelfLogger.error(s"Destination path already exists $absPath")
                 }
                 else {
                   try {
-                    val exitCode =
-                      new ProcessBuilder("git", "clone", url, absPath.toString())
-                        .redirectError(ProcessBuilder.Redirect.INHERIT)
-                        .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                        .start()
-                        .waitFor()
+                    val process = new ProcessBuilder("git", "clone", url, absPath.toString()).start()
+                    val outputLines = io.Source.fromInputStream(process.getInputStream).getLines()
+                    val errorLines = io.Source.fromInputStream(process.getErrorStream).getLines()
+                    val printOutputThread = Thread.ofPlatform().start { () =>
+                      outputLines.foreach(GitLogger.standard)
+                    }
+                    val printErrorsThread = Thread.ofPlatform().start { () =>
+                      errorLines.foreach(GitLogger.standard)
+                    }
+                    val exitCode = process.waitFor()
+                    printOutputThread.join()
+                    printErrorsThread.join()
                     if (exitCode == 0)
-                      TerminalUtil.success(s"Cloned into $absPath")
+                      SelfLogger.success(s"Cloned into $absPath")
                   }
                   catch {
-                    case _: Throwable => TerminalUtil.error("Clone failed")
+                    case _: Throwable => SelfLogger.error("Clone failed")
                   }
                 }
               case None =>
-                TerminalUtil.error(s"Bad url '$str'")
+                SelfLogger.error(s"Bad url '$str'")
             }
           }
         }
       }
     )
 
-object TerminalUtil {
-  def warning(message: String) = Console.out.println(
-    s"${inBracket(fansi.Color.Yellow("Warning"))} $message"
+class TerminalLogger(source: String) {
+  def standard(message: String): Unit = Console.out.println(
+    s"${inBracket(fansi.Color.DarkGray(source))} $message"
   )
-  def success(message: String = "") = Console.out.println(
-    inBracket(fansi.Color.Green("Success")) + " " + message
+  def warning(message: String): Unit = Console.out.println(
+    s"${inBracket(fansi.Color.Yellow(source))} $message"
   )
-  def error(message: String) = Console.err.println(
-    inBracket(fansi.Color.Red("Error")) + " " + message
+  def success(message: String = ""): Unit = Console.out.println(
+    inBracket(fansi.Color.Green(source)) + " " + message
+  )
+  def error(message: String): Unit = Console.err.println(
+    inBracket(fansi.Color.Red(source)) + " " + message
   )
   private def inBracket(v: fansi.Str) = "[" + v + "]"
 }
+
+object SelfLogger extends TerminalLogger("src")
+object GitLogger extends TerminalLogger("git")
 
 object WithConfig {
   def apply(f: Config => Unit): Unit = {
     val config = Config.read().getOrElse {
       Config.write(Config.default)
-      TerminalUtil.warning(s"No config file found. Created default one")
+      SelfLogger.warning("No config file found. Created default one")
       Config.default
     }
     f(config)

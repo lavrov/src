@@ -10,6 +10,7 @@ object cli extends Module {
   object native extends CliModule, ScalaNativeModule {
     def moduleDir = cli.moduleDir
     def scalaNativeVersion = "0.5.8"
+    def nativeMultithreading = Some(true)
     object test extends ScalaNativeTests, CliTestModule
   }
 }
